@@ -9,9 +9,10 @@ import { ProfilePage } from "@/components/ProfilePage";
 
 interface MuseumAdminDashboardProps {
   activeSection: string;
+  museumId: string;
 }
 
-export function MuseumAdminDashboard({ activeSection }: MuseumAdminDashboardProps) {
+export function MuseumAdminDashboard({ activeSection, museumId }: MuseumAdminDashboardProps) {
 
   const renderContent = () => {
     switch (activeSection) {
@@ -26,7 +27,7 @@ export function MuseumAdminDashboard({ activeSection }: MuseumAdminDashboardProp
       default:
         return (
           <div className="space-y-6 animate-fade-in-up">
-            <MuseumBanner />
+            <MuseumBanner museumId={museumId} />
             <StatsOverview />
           </div>
         );

@@ -113,8 +113,6 @@ export function ExperienceManagement() {
           )}
         </Button>
       </div>
-
-      {/* Inline Add Experience Form */}
       {showAddForm && (
         <Card className="border-2 border-primary/20 bg-card">
           <CardHeader className="pb-4">

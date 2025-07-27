@@ -11,6 +11,7 @@ type UserKind = "Admin" | "SuperAdmin";
 const Index = () => {
   const [currentKind, setCurrentKind] = useState<UserKind | "">("");
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [museumId, setMuseumId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -25,6 +26,10 @@ const Index = () => {
           setCurrentKind(decodedPayload.kind);
         } else {
           console.warn("Unknown kind in token:", decodedPayload.kind);
+        }
+        // Extract managed museum ID for Admin
+        if (decodedPayload.kind === "Admin" && (decodedPayload.museumId || decodedPayload.mangedMuseum)) {
+          setMuseumId(decodedPayload.museumId || decodedPayload.mangedMuseum);
         }
       } catch (err) {
         console.error("Failed to decode token:", err);
@@ -68,7 +73,11 @@ const Index = () => {
             
             <div className="flex-1 p-6">
               {currentKind === "Admin" ? (
-                <MuseumAdminDashboard activeSection={activeSection} />
+                museumId ? (
+                  <MuseumAdminDashboard activeSection={activeSection} museumId={museumId} />
+                ) : (
+                  <div className="text-red-500">No museum assigned to this admin.</div>
+                )
               ) : (
                 <SuperAdminDashboard activeSection={activeSection} />
               )}
