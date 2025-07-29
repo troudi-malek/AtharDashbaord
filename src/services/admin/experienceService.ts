@@ -6,12 +6,28 @@ function getTokenFromCookies() {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-export const CreateExperience = async (formData: FormData) => {
+export const CreateExperience = async (experience: { name: string; description: string; type: string }) => {
   try {
     const token = getTokenFromCookies();
-    const response = await axios.post(`${API_URL}experience/addExperience`, formData, {
+    // Extract idMuseum from JWT in cookies
+    let idMuseum = null;
+    if (token) {
+      const parts = token.split('.');
+      const payload = parts[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      idMuseum = decodedPayload.mangedMuseum;
+    }
+    // Build the payload
+    const payload = {
+      idMuseum,
+      name: experience.name,
+      description: experience.description,
+      type: experience.type
+    };
+    console.log('Payload:', payload);
+    const response = await axios.post(`${API_URL}experience/addExperience`, payload, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
     });
@@ -32,7 +48,7 @@ export const GetExperiences = async () => {
     const decodedPayload = JSON.parse(atob(payload));
     console.log('Decoded JWT payload:', decodedPayload);
 
-    const response = await axios.post(`${API_URL}experience/getExperiences`,
+    const response = await axios.post(`${API_URL}experience/getAllExperiences`,
       { idMuseum: decodedPayload.mangedMuseum },
       {
         headers: {
