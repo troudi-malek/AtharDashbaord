@@ -8,7 +8,6 @@ function getTokenFromCookies() {
 
 export const CreateAdmin = async(username :string,email : string,password:string,mangedMuseum:string)=>{
 try{
-    console.log(mangedMuseum)
         const token = getTokenFromCookies();
         const response = await axios.post(`${API_URL}admin/SignUp`,{username,email,password,mangedMuseum},{
             headers: {
@@ -18,13 +17,12 @@ try{
           });
           return response.data;
     }catch(error){
-        console.error(error);
     }
 }
     export const GetAllUser = async()=>{
         try{
                 const token = getTokenFromCookies();
-                const response = await axios.get(`${API_URL}superAdmin/getAllusers`,{
+                const response = await axios.get(`${API_URL}users/getAllUsers`,{
                     headers: {
                       'Content-Type': 'multipart/form-data',
                       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -32,7 +30,6 @@ try{
                   });
                   return response.data;
             }catch(error){
-                console.error(error);
             }
         
 }

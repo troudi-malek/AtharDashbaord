@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Building2, MapPin, Eye, Users, DollarSign, TrendingUp, Plus, X, Upload } from "lucide-react";
+import { Building2, MapPin, Eye, Users, Plus, X } from "lucide-react";
 import { Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar } from "recharts";
-import { CreateMuseum, GetMuseums } from '@/services/SuperAdmin/museumsService';
-import { DeleteMuseum } from '@/services/SuperAdmin/museumsService';
+import { CreateMuseum, GetMuseums } from '@/services/museumsService';
+import { DeleteMuseum } from '@/services/museumsService';
 
 // Removed static museums array
 
@@ -36,12 +36,14 @@ export function MuseumDirectory() {
     imageUrl: "",
     description: "",
     imageFile: null as File | null,
+    cost: 0,
   });
   const [formErrors, setFormErrors] = useState({
     name: false,
     location: false,
     imageUrl: false,
-    description: false
+    description: false,
+    cost: false,
   });
   const [museums, setMuseums] = useState<any[]>([]);
   const [loadingMuseums, setLoadingMuseums] = useState(true);
@@ -65,7 +67,7 @@ export function MuseumDirectory() {
     setLoadingMuseums(false);
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (formErrors[field as keyof typeof formErrors]) {
@@ -89,6 +91,7 @@ export function MuseumDirectory() {
       imageUrl: !formData.imageUrl.trim(),
       description: !formData.description.trim(),
       imageFile: !formData.imageFile,
+      cost: formData.cost === undefined || formData.cost === null || isNaN(Number(formData.cost)),
     };
     setFormErrors(errors as any);
     // If no errors, save the museum
@@ -98,6 +101,7 @@ export function MuseumDirectory() {
         data.append('name', formData.name);
         data.append('location', formData.location);
         data.append('description', formData.description);
+        data.append('cost', String(formData.cost));
         if (formData.imageFile) {
           data.append('imageUrl', formData.imageFile);
         }
@@ -108,8 +112,8 @@ export function MuseumDirectory() {
         const result = await CreateMuseum(data);
         if (result) {
           setShowCreateForm(false);
-          setFormData({ name: "", location: "", imageUrl: "", description: "", imageFile: null });
-          setFormErrors({ name: false, location: false, imageUrl: false, description: false });
+          setFormData({ name: "", location: "", imageUrl: "", description: "", imageFile: null, cost: 0 });
+          setFormErrors({ name: false, location: false, imageUrl: false, description: false, cost: false });
           refreshMuseums();
         } else {
         }
@@ -179,6 +183,10 @@ export function MuseumDirectory() {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Paid Ratio:</span>
                     <span className="font-medium text-foreground">{selectedMuseum.paidRatio}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Cost:</span>
+                    <span className="font-medium text-foreground">{selectedMuseum.cost}</span>
                   </div>
                 </div>
               </div>
@@ -292,6 +300,22 @@ export function MuseumDirectory() {
                   <p className="text-xs text-destructive">Location is required</p>
                 )}
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="cost" className={`text-foreground ${formErrors.cost ? 'label-error' : ''}`}>Cost *</Label>
+                <Input
+                  id="cost"
+                  type="number"
+                  min="0"
+                  value={formData.cost}
+                  onChange={(e) => handleInputChange("cost", Number(e.target.value))}
+                  placeholder="Enter cost"
+                  className={`border-input bg-background ${formErrors.cost ? 'input-error' : ''}`}
+                  required
+                />
+                {formErrors.cost && (
+                  <p className="text-xs text-destructive">Cost is required</p>
+                )}
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -399,6 +423,9 @@ export function MuseumDirectory() {
                 <div className="flex items-center gap-1 mt-1">
                   <MapPin className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">{museum.location}</span>
+                  {museum.cost !== undefined && (
+                    <span className="ml-2 text-xs bg-muted px-2 py-1 rounded">Cost: {museum.cost} DT</span>
+                  )}
                 </div>
               </div>
 

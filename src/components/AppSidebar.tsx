@@ -19,7 +19,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { useEffect } from "react";
 
 interface AppSidebarProps {
   kind: string;
@@ -39,37 +41,51 @@ const superAdminItems = [
   { id: "dashboard", title: "Global Dashboard", icon: BarChart3 },
   { id: "museums", title: "Museums", icon: Building2 },
   { id: "admins", title: "Admin Management", icon: Users },
-  { id: "settings", title: "System Settings", icon: Shield },
   { id: "profile", title: "Profile", icon: User },
 ];
 
 export function AppSidebar({ kind, activeSection, onSectionChange }: AppSidebarProps) {
   const items = kind === "SuperAdmin" ? superAdminItems : adminItems;
+  const { setOpen } = useSidebar();
   console.log(kind +"inside app")
 console.log(items)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1200) {
+        setOpen(false);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setOpen]);
   return (
     <Sidebar className="border-r border-slate-200 bg-slate-900">
       <SidebarHeader className="p-6">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-gold rounded-lg flex items-center justify-center">
-            {kind === "SuperAdmin" ? (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-gold rounded-lg flex items-center justify-center">
+              {kind === "SuperAdmin" ? (
               <Crown className="w-5 h-5 text-slate-900" />
             ) : (
               <Building2 className="w-5 h-5 text-slate-900" />
             )}
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-white">MuseumFlow</h2>
-            <p className="text-xs text-slate-400">
+            </div>
+            <div>
+            <h2 className="text-lg font-semibold text-sidebar-foreground">MuseumFlow</h2>
+            <p className="text-xs text-sidebar-muted-foreground">
               {kind === "SuperAdmin" ? "Super Admin" : "Museum Admin"}
-            </p>
+              </p>
+            </div>
           </div>
+          {/* Toggle button removed; controlled from header */}
         </div>
       </SidebarHeader>
 
+
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-400 text-xs uppercase tracking-wider">
+        <SidebarGroupLabel className="text-sidebar-muted-foreground text-xs uppercase tracking-wider">
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -81,8 +97,8 @@ console.log(items)
                     className={`
                       w-full justify-start gap-3 p-3 rounded-lg transition-all duration-200
                       ${activeSection === item.id 
-                        ? "bg-amber-500 text-slate-900 font-medium shadow-lg" 
-                        : "text-slate-300 hover:text-white hover:bg-slate-800"
+                         ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-lg" 
+                        : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/50"
                       }
                     `}
                   >

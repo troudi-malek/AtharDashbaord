@@ -21,14 +21,14 @@ export function MuseumAdminDashboard({ activeSection, museumId }: MuseumAdminDas
       case "access-codes":
         return <AccessCodeInterface />;
       case "settings":
-        return <MuseumSettings />;
+        return <MuseumSettings museumId={museumId} />;
       case "profile":
         return <ProfilePage userRole="museum_admin" />;
       default:
         return (
           <div className="space-y-6 animate-fade-in-up">
             <MuseumBanner museumId={museumId} />
-            <StatsOverview />
+            <StatsOverview museumId={museumId} />
           </div>
         );
     }

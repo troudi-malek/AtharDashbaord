@@ -1,42 +1,63 @@
 
-import { TrendingUp, Users, Clock, CreditCard } from "lucide-react";
+import { TrendingUp, Users, CreditCard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, Line, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { LineChart, Line, BarChart, Bar } from "recharts";
+import { useEffect, useMemo, useState } from "react";
+import { GetMuseumById } from "@/services/museumsService";
 
-// Sample data for charts
-const dailyVisitsData = [
-  { day: "Mon", visits: 980 },
-  { day: "Tue", visits: 1120 },
-  { day: "Wed", visits: 1050 },
-  { day: "Thu", visits: 1247 },
-  { day: "Fri", visits: 1180 },
-  { day: "Sat", visits: 1350 },
-  { day: "Sun", visits: 1100 },
-];
-
-const experienceUsageData = [
-  { name: "Free", value: 68, color: "hsl(var(--muted-foreground))" },
-  { name: "Paid", value: 32, color: "hsl(var(--primary))" },
-];
-
-const codeRedemptionData = [
-  { month: "Jan", generated: 45, submitted: 38 },
-  { month: "Feb", generated: 52, submitted: 43 },
-  { month: "Mar", generated: 48, submitted: 41 },
-  { month: "Apr", generated: 61, submitted: 55 },
-];
+// No static fallback data. Charts will render only with API data.
 
 const chartConfig = {
   visits: { label: "Visits", color: "hsl(var(--primary))" },
-  free: { label: "Free", color: "hsl(var(--muted-foreground))" },
-  paid: { label: "Paid", color: "hsl(var(--primary))" },
+  views: { label: "Views", color: "hsl(var(--primary))" },
+  visitors: { label: "Visitors", color: "hsl(var(--muted-foreground))" },
   generated: { label: "Generated", color: "hsl(var(--muted-foreground))" },
   submitted: { label: "Submitted", color: "hsl(var(--primary))" },
 };
 
-export function StatsOverview() {
+interface StatsOverviewProps {
+  museumId?: string;
+}
+
+export function StatsOverview({ museumId }: StatsOverviewProps) {
+  const [apiData, setApiData] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (!museumId) return;
+    GetMuseumById(museumId).then((data) => setApiData(data));
+  }, [museumId]);
+
+  const dailyVisits = apiData?.dailyVisits ?? 0;
+  const codeRedemptionPercentage = apiData?.codeRedemptionPercentage ?? 0;
+  const experienceViews = Array.isArray(apiData?.experienceViews) ? apiData!.experienceViews : [];
+
+  const dailyVisitsChartData = useMemo(() => {
+    const series = Array.isArray((apiData as any)?.dailyVisitsSeries)
+      ? (apiData as any).dailyVisitsSeries
+      : [];
+    const mapped = series
+      .map((item: any, index: number) => ({
+        day: item?.day || item?.label || `#${index + 1}`,
+        visits: Number(item?.visits ?? item?.value ?? 0),
+      }))
+      .slice(0, 7);
+    return mapped;
+  }, [apiData?.dailyVisitsSeries]);
+
+  const performanceData = useMemo(() => {
+    if (!experienceViews.length) return [] as Array<{ day: string; views: number; visitors: number }>;
+    const mapped = experienceViews
+      .map((item: any, index: number) => ({
+        day: item?.day || item?.label || `#${index + 1}`,
+        views: Number(item?.views) || 0,
+        visitors: Number(item?.visitors) || 0,
+      }))
+      .slice(0, 7);
+    return mapped;
+  }, [experienceViews]);
+
   return (
     <div className="space-y-6">
       {/* Chart Cards */}
@@ -50,58 +71,58 @@ export function StatsOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground mb-2">1,247</div>
-            <div className="text-sm text-muted-foreground mb-3">+12% from yesterday</div>
-            <ChartContainer config={chartConfig} className="h-16">
-              <LineChart data={dailyVisitsData}>
-                <Line 
-                  type="monotone" 
-                  dataKey="visits" 
-                  stroke="hsl(var(--primary))" 
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </LineChart>
-            </ChartContainer>
+            <div className="text-2xl font-bold text-foreground mb-2">{dailyVisits.toLocaleString()}</div>
+            <div className="text-sm text-muted-foreground mb-3">Today</div>
+            {dailyVisitsChartData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="h-16">
+                <LineChart data={dailyVisitsChartData}>
+                  <Line
+                    type="monotone"
+                    dataKey="visits"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </LineChart>
+              </ChartContainer>
+            ) : (
+              <div className="text-xs text-muted-foreground">No trend data available</div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Paid vs Free Donut Chart */}
+        {/* Experience Performance */}
         <Card className="border-0 bg-card">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-foreground">Experience Usage</CardTitle>
+              <CardTitle className="text-sm font-medium text-foreground">Experience Performance</CardTitle>
               <CreditCard className="w-4 h-4 text-primary" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between mb-3">
               <div>
-                <div className="text-lg font-bold text-foreground">342 Paid</div>
-                <div className="text-sm text-muted-foreground">725 Free</div>
+                <div className="text-lg font-bold text-foreground">{performanceData.reduce((s: number, d: any) => s + (d.views || 0), 0).toLocaleString()} Views</div>
+                <div className="text-sm text-muted-foreground">{performanceData.reduce((s: number, d: any) => s + (d.visitors || 0), 0).toLocaleString()} Visitors</div>
               </div>
-              <ChartContainer config={chartConfig} className="h-16 w-16">
-                <PieChart>
-                  <Pie
-                    data={experienceUsageData}
-                    dataKey="value"
-                    innerRadius={12}
-                    outerRadius={24}
-                  >
-                    {experienceUsageData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </PieChart>
-              </ChartContainer>
+              {performanceData.length > 0 ? (
+                <ChartContainer config={chartConfig} className="h-16 w-28">
+                  <BarChart data={performanceData}>
+                    <Bar dataKey="views" fill="hsl(var(--primary))" radius={2} />
+                    <Bar dataKey="visitors" fill="hsl(var(--muted-foreground))" radius={2} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </BarChart>
+                </ChartContainer>
+              ) : (
+                <div className="text-xs text-muted-foreground">No performance data</div>
+              )}
             </div>
-            <div className="text-sm text-muted-foreground">32% paid experiences</div>
+            <div className="text-sm text-muted-foreground">Weekly engagement trend</div>
           </CardContent>
         </Card>
 
-        {/* Code Redemption Bar Chart */}
+        {/* Code Redemption */}
         <Card className="border-0 bg-card">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -110,15 +131,9 @@ export function StatsOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground mb-2">90%</div>
+            <div className="text-2xl font-bold text-foreground mb-2">{Number(codeRedemptionPercentage).toFixed(1)}%</div>
             <div className="text-sm text-muted-foreground mb-3">Redemption rate</div>
-            <ChartContainer config={chartConfig} className="h-16">
-              <BarChart data={codeRedemptionData}>
-                <Bar dataKey="generated" fill="hsl(var(--muted-foreground))" radius={2} />
-                <Bar dataKey="submitted" fill="hsl(var(--primary))" radius={2} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </BarChart>
-            </ChartContainer>
+            <Progress value={Math.max(0, Math.min(100, Number(codeRedemptionPercentage)))} className="h-2" />
           </CardContent>
         </Card>
       </div>

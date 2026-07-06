@@ -6,7 +6,7 @@ function getTokenFromCookies() {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-export const CreateExperience = async (experience: { name: string; description: string; type: string }) => {
+export const CreateExperience = async (formData: FormData) => {
   try {
     const token = getTokenFromCookies();
     // Extract idMuseum from JWT in cookies
@@ -17,23 +17,15 @@ export const CreateExperience = async (experience: { name: string; description: 
       const decodedPayload = JSON.parse(atob(payload));
       idMuseum = decodedPayload.mangedMuseum;
     }
-    // Build the payload
-    const payload = {
-      idMuseum,
-      name: experience.name,
-      description: experience.description,
-      type: experience.type
-    };
-    console.log('Payload:', payload);
-    const response = await axios.post(`${API_URL}experience/addExperience`, payload, {
+    formData.append('idMuseum', idMuseum);
+    const response = await axios.post(`${API_URL}experience/addExperience`, formData, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
     });
     return response.data;
   } catch (error) {
-    console.error(error);
   }
 };
 
@@ -46,7 +38,6 @@ export const GetExperiences = async () => {
     const parts = token.split('.');
     const payload = parts[1];
     const decodedPayload = JSON.parse(atob(payload));
-    console.log('Decoded JWT payload:', decodedPayload);
 
     const response = await axios.post(`${API_URL}experience/getAllExperiences`,
       { idMuseum: decodedPayload.mangedMuseum },
@@ -59,20 +50,20 @@ export const GetExperiences = async () => {
 
     return response.data;
   } catch (error) {
-    console.error(error);
   }
 };
-
 
 export const GetExperienceById = async (id: string) => {
   try {
     const token = getTokenFromCookies();
+    if (!token) {
+      throw new Error("Token ya bro");
+    }
     const response = await axios.get(`${API_URL}experience/getExperienceById/${id}`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {},
     });
     return response.data;
   } catch (error) {
-    console.error(error);
   }
 };
 
@@ -87,7 +78,6 @@ export const UpdateExperience = async (id: string, formData: FormData) => {
     });
     return response.data;
   } catch (error) {
-    console.error(error);
   }
 };
 
@@ -99,6 +89,5 @@ export const DeleteExperience = async (id: string) => {
     });
     return response.data;
   } catch (error) {
-    console.error(error);
   }
 };

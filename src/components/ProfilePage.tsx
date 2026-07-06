@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { User, Mail, Shield, Building2, Edit, Camera, Save, X, Phone, Calendar } from "lucide-react";
+import { useEffect, useState } from "react";
+import { User, Mail, Shield, Building2, Edit, Camera, Save, X, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { GetProfile } from "@/services/profileService";
 
 interface ProfilePageProps {
   userRole: "museum_admin" | "super_admin";
@@ -35,10 +35,19 @@ const profileData = {
 export function ProfilePage({ userRole }: ProfilePageProps) {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [profileFormData, setProfileFormData] = useState({
+  const [profile, setProfile] = useState({
     name: profileData[userRole].name,
     email: profileData[userRole].email,
+    role: profileData[userRole].role,
+    assignedMuseums: profileData[userRole].assignedMuseums,
+    profileImage: profileData[userRole].profileImage,
+    joinDate: profileData[userRole].joinDate,
     phone: profileData[userRole].phone
+  });
+  const [profileFormData, setProfileFormData] = useState({
+    name: profile.name,
+    email: profile.email,
+    phone: profile.phone
   });
   const [passwordFormData, setPasswordFormData] = useState({
     currentPassword: "",
@@ -55,8 +64,38 @@ export function ProfilePage({ userRole }: ProfilePageProps) {
     newPassword: false,
     confirmPassword: false
   });
+  // Add image upload state
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
-  const profile = profileData[userRole];
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await GetProfile();
+        const d = resp?.data;
+        if (d) {
+          const mapped = {
+            name: d.fullName || profile.name,
+            email: d.email || profile.email,
+            role: d.role || profile.role,
+            assignedMuseums: Array.isArray(d.assignedMuseums) ? d.assignedMuseums : profile.assignedMuseums,
+            profileImage: profile.profileImage,
+            joinDate: d.memberSince ? new Date(d.memberSince).toLocaleString(undefined, { year: 'numeric', month: 'long' }) : profile.joinDate,
+            phone: d.phoneNumber ?? profile.phone,
+            passwordLastUpdated: d.passwordLastUpdated
+          } as any;
+          setProfile(mapped);
+          setProfileFormData({
+            name: mapped.name,
+            email: mapped.email,
+            phone: mapped.phone
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleProfileInputChange = (field: string, value: string) => {
     setProfileFormData(prev => ({ ...prev, [field]: value }));
@@ -125,12 +164,25 @@ export function ProfilePage({ userRole }: ProfilePageProps) {
     setIsEditingPassword(false);
   };
 
+  // Handle image selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+      // Optionally update preview immediately
+      setProfile(prev => ({
+        ...prev,
+        profileImage: URL.createObjectURL(e.target.files[0])
+      }));
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in-up max-w-4xl mx-auto">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-foreground">Profile</h2>
-          <p className="text-muted-foreground mt-1">Manage your account settings and preferences</p>
+      <div className="text-center mb-2">
+        <h2 className="text-4xl font-bold text-foreground mb-2">Profile</h2>
+        <p className="text-muted-foreground text-lg">Manage your account settings and preferences</p>
+        <div className="flex justify-center mt-4">
+          <div className="w-24 h-1 bg-primary rounded-full"></div>
         </div>
       </div>
 
@@ -139,7 +191,7 @@ export function ProfilePage({ userRole }: ProfilePageProps) {
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex flex-col items-center space-y-4">
-              <div className="relative">
+              <div className="relative group">
                 <img 
                   src={profile.profileImage} 
                   alt="Profile"
@@ -148,8 +200,18 @@ export function ProfilePage({ userRole }: ProfilePageProps) {
                 <Button 
                   size="sm" 
                   className="absolute bottom-0 right-0 rounded-full bg-primary hover:bg-primary/90"
+                  asChild
                 >
-                  <Camera className="w-4 h-4" />
+                  <label htmlFor="profile-image-upload" className="cursor-pointer flex items-center">
+                    <Camera className="w-4 h-4" />
+                    <input
+                      id="profile-image-upload"
+                      type="file"
+                      accept="image/png, image/jpeg"
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
+                  </label>
                 </Button>
               </div>
               <Badge 

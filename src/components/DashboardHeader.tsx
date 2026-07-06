@@ -1,6 +1,7 @@
 
 import { Bell, ChevronDown, LogOut, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,14 +19,17 @@ interface DashboardHeaderProps {
   onKindSwitch: () => void;                    // Renamed from onRoleSwitch
   onProfileClick?: () => void;
   onLogoutClick?: () => void;
+  username: string;
 }
 
-export function DashboardHeader({ kind, onProfileClick }: DashboardHeaderProps) {
+export function DashboardHeader({ kind, onProfileClick, username }: DashboardHeaderProps) {
   const navigate = useNavigate();
   return (
     <header className="bg-white border-b border-slate-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
+          {/* Sidebar menu button (visible at all sizes) */}
+          <SidebarTrigger />
           <h1 className="text-2xl font-bold text-slate-900">
             {kind === "super_admin" ? "Global Dashboard" : "Museum Dashboard"}
           </h1>
@@ -54,7 +58,7 @@ export function DashboardHeader({ kind, onProfileClick }: DashboardHeaderProps) 
                 <div className="w-8 h-8 bg-gradient-gold rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-slate-900" />
                 </div>
-                <span className="text-sm font-medium text-slate-700">Admin User</span>
+                <span className="text-sm font-medium text-slate-700">{username}</span>
                 <ChevronDown className="w-4 h-4 text-slate-500" />
               </Button>
             </DropdownMenuTrigger>

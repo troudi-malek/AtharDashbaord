@@ -8,6 +8,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import Index from './pages/Index';
 import Cookies from 'js-cookie';
 import ProtectedRoutes from "./ProtectedRoutes";
+import ExperienceDetail from './components/museum/ExperienceDetail';
 
 function App() {
   const queryClient = new QueryClient();
@@ -25,7 +26,8 @@ function App() {
 
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/resetPassword" element={<ResetPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/experience/:id" element={<ExperienceDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               {/* <Route path="*" element={<NotFound />} /> */}
             </Routes>

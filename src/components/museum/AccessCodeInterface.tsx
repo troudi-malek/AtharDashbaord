@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Copy, Plus, Filter, Download, Check, Eye, FileSpreadsheet, Sparkles, Key, Clock, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Copy, Plus, Eye, FileSpreadsheet, Sparkles, Key, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,14 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { GenerateCodes, GetCodesByMuseum } from "@/services/codeService";
+import * as XLSX from 'xlsx';
 
-const generatedCodes = [
-  { id: 1, code: "MET-2024-ABC123", generated: "2024-01-15 10:30", expires: "2024-02-15", used: false, experience: "Ancient Egypt Gallery" },
-  { id: 2, code: "MET-2024-XYZ789", generated: "2024-01-14 14:22", expires: "2024-02-14", used: true, experience: "Renaissance Art Tour" },
-  { id: 3, code: "MET-2024-DEF456", generated: "2024-01-13 09:15", expires: "2024-02-13", used: false, experience: "All Experiences" },
-  { id: 4, code: "MET-2024-GHI321", generated: "2024-01-12 16:45", expires: "2024-02-12", used: true, experience: "Modern Art Exhibition" },
-  { id: 5, code: "MET-2024-JKL654", generated: "2024-01-11 11:20", expires: "2024-02-11", used: false, experience: "Sculpture Garden" },
-];
+type Code = {
+  _id: string;
+  code: string;
+  createdAt: string;
+  submitted: boolean;
+  museumName?: string;
+};
 
 export function AccessCodeInterface() {
   const [currentCode, setCurrentCode] = useState("");
@@ -24,23 +26,88 @@ export function AccessCodeInterface() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [codes, setCodes] = useState<Code[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [museumName, setMuseumName] = useState("");
   const { toast } = useToast();
 
-  const generateCodes = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      const codes = Array.from({ length: codeCount }, () => 
-        `MET-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
-      );
-      setCurrentCode(codes.join(", "));
-      setIsGenerating(false);
-      setShowConfirmModal(true);
-      
+  useEffect(() => {
+    fetchCodes();
+  }, []);
+
+  const fetchCodes = async () => {
+    try {
+      setLoading(true);
+      const data = await GetCodesByMuseum();
+      const codesData = Array.isArray(data) ? data : data?.codes || [];
+      setCodes(codesData);
+      setMuseumName(data?.museumName || "");
+    } catch (error) {
+      console.error("Failed to fetch codes:", error);
       toast({
-        title: `✨ ${codeCount} Access Code${codeCount > 1 ? 's' : ''} Generated!`,
+        title: "Failed to load codes",
+        description: "Could not fetch access codes. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateCodes = async () => {
+    try {
+      setIsGenerating(true);
+      const res = await GenerateCodes(codeCount);
+
+      // Robust extraction of codes from various API shapes
+      let codesFromRes: string[] = [];
+      const normalize = (arr: any[]): string[] => {
+        return arr
+          .map((item: any) => {
+            if (typeof item === "string") return item;
+            if (item && typeof item === "object") return String(item.code || item.value || "");
+            return "";
+          })
+          .filter(Boolean);
+      };
+
+      if (Array.isArray(res)) {
+        codesFromRes = normalize(res);
+      } else if (Array.isArray(res?.data)) {
+        // handles { message, data: [...] } where elements can be strings or objects
+        codesFromRes = normalize(res.data);
+      } else if (Array.isArray(res?.codes)) {
+        codesFromRes = normalize(res.codes);
+      } else if (Array.isArray(res?.data?.codes)) {
+        codesFromRes = normalize(res.data.codes);
+      } else if (typeof res === "string") {
+        codesFromRes = [res];
+      }
+
+      if (codesFromRes.length > 0) {
+        setCurrentCode(codesFromRes.join(", "));
+      } else {
+        // If we couldn't extract codes as an array, avoid dumping entire payload; show a friendly message
+        setCurrentCode("");
+      }
+
+      setShowConfirmModal(true);
+      toast({
+        title: `✨ ${codeCount} Access Code${codeCount > 1 ? "s" : ""} Generated!`,
         description: "New codes are ready to use and will be available for download.",
       });
-    }, 1500);
+      
+      // Refresh the codes list after generation
+      fetchCodes();
+    } catch (error: any) {
+      toast({
+        title: "Generation failed",
+        description: error?.message || "Could not generate codes. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const copyToClipboard = (code: string) => {
@@ -52,26 +119,61 @@ export function AccessCodeInterface() {
   };
 
   const exportToExcel = () => {
-    toast({
-      title: "📊 Excel Export Started",
-      description: "Your access codes report is being prepared for download.",
-    });
-    
-    // Simulate Excel export
-    setTimeout(() => {
+    try {
+      // Prepare data for Excel export
+      const excelData = codes.map((code, index) => ({
+        'S.No': index + 1,
+        'Access Code': code.code,
+        'Status': code.submitted ? 'Used' : 'Active',
+        'Generated Date': new Date(code.createdAt).toLocaleDateString(),
+        'Generated Time': new Date(code.createdAt).toLocaleTimeString(),
+        'Museum': museumName || 'Unknown Museum'
+      }));
+
+      // Create a new workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(excelData);
+
+      // Set column widths
+      const colWidths = [
+        { wch: 8 },   // S.No
+        { wch: 15 },  // Access Code
+        { wch: 10 },  // Status
+        { wch: 15 },  // Generated Date
+        { wch: 15 },  // Generated Time
+        { wch: 25 }   // Museum
+      ];
+      ws['!cols'] = colWidths;
+
+      // Add the worksheet to the workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Access Codes');
+
+      // Generate filename with current date
+      const currentDate = new Date().toISOString().split('T')[0];
+      const filename = `Access_Codes_${museumName?.replace(/\s+/g, '_') || 'Museum'}_${currentDate}.xlsx`;
+
+      // Write and download the file
+      XLSX.writeFile(wb, filename);
+
       toast({
         title: "✅ Export Complete",
-        description: "Access codes report has been downloaded successfully.",
+        description: `Access codes report has been downloaded as ${filename}`,
       });
-    }, 2000);
+    } catch (error) {
+      console.error('Excel export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "Could not export to Excel. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const filteredCodes = generatedCodes.filter(code => {
+  const filteredCodes = codes.filter(code => {
     const matchesFilter = filter === "all" || 
-      (filter === "used" && code.used) || 
-      (filter === "unused" && !code.used);
-    const matchesSearch = code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      code.experience.toLowerCase().includes(searchTerm.toLowerCase());
+      (filter === "used" && code.submitted) || 
+      (filter === "unused" && !code.submitted);
+    const matchesSearch = code.code.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -180,51 +282,56 @@ export function AccessCodeInterface() {
             {/* Code Statistics */}
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-3 bg-muted/50 rounded-xl">
-                <div className="text-2xl font-bold text-foreground font-poppins">{generatedCodes.length}</div>
+                <div className="text-2xl font-bold text-foreground font-poppins">{codes.length}</div>
                 <div className="text-xs text-muted-foreground">Total</div>
               </div>
               <div className="text-center p-3 bg-muted/50 rounded-xl">
-                <div className="text-2xl font-bold text-success font-poppins">{generatedCodes.filter(c => !c.used).length}</div>
+                <div className="text-2xl font-bold text-success font-poppins">{codes.filter(c => !c.submitted).length}</div>
                 <div className="text-xs text-muted-foreground">Active</div>
               </div>
               <div className="text-center p-3 bg-muted/50 rounded-xl">
-                <div className="text-2xl font-bold text-muted-foreground font-poppins">{generatedCodes.filter(c => c.used).length}</div>
+                <div className="text-2xl font-bold text-muted-foreground font-poppins">{codes.filter(c => c.submitted).length}</div>
                 <div className="text-xs text-muted-foreground">Used</div>
               </div>
             </div>
 
             {/* Code List */}
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {filteredCodes.map((item, index) => (
-                <div 
-                  key={item.id}
-                  className="flex items-center justify-between p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-all duration-200 animate-slide-in-right group"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="flex-1">
-                    <div className="font-mono text-sm font-semibold text-foreground font-poppins">{item.code}</div>
-                    <div className="text-xs text-muted-foreground mt-1">{item.experience}</div>
-                    <div className="text-xs text-muted-foreground">Generated {item.generated}</div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge 
-                      className={`${item.used ? 'badge-used' : 'badge-unused'} px-3 py-1 rounded-full text-xs font-medium`}
-                    >
-                      {item.used ? "Used" : "Active"}
-                    </Badge>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => copyToClipboard(item.code)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-primary/10"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
+              {loading ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-lg font-medium font-poppins">Loading codes...</p>
                 </div>
-              ))}
-              
-              {filteredCodes.length === 0 && (
+              ) : filteredCodes.length > 0 ? (
+                filteredCodes.map((item, index) => (
+                  <div 
+                    key={item._id}
+                    className="flex items-center justify-between p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-all duration-200 animate-slide-in-right group"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="flex-1">
+                      <div className="font-mono text-sm font-semibold text-foreground">{item.code}</div>
+                      <div className="text-xs text-muted-foreground mt-1">{museumName || "Museum"}</div>
+                      <div className="text-xs text-muted-foreground">Generated {new Date(item.createdAt).toLocaleString()}</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge 
+                        className={`${item.submitted ? 'badge-used' : 'badge-unused'} px-3 py-1 rounded-full text-xs font-medium`}
+                      >
+                        {item.submitted ? "Used" : "Active"}
+                      </Badge>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => copyToClipboard(item.code)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-primary/10"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
                 <div className="text-center py-12 text-muted-foreground">
                   <Key className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium font-poppins">No codes found</p>

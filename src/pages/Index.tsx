@@ -10,6 +10,7 @@ type UserKind = "Admin" | "SuperAdmin";
 
 const Index = () => {
   const [currentKind, setCurrentKind] = useState<UserKind | "">("");
+  const [username, setUsername] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [museumId, setMuseumId] = useState<string | null>(null);
 
@@ -21,7 +22,7 @@ const Index = () => {
         const parts = token.split(".");
         const payload = parts[1];
         const decodedPayload = JSON.parse(atob(payload));
-
+        setUsername(decodedPayload.username);
         if (decodedPayload.kind === "Admin" || decodedPayload.kind === "SuperAdmin") {
           setCurrentKind(decodedPayload.kind);
         } else {
@@ -67,6 +68,7 @@ const Index = () => {
           
           <main className="flex-1 flex flex-col">
             <DashboardHeader 
+              username={username}
               kind={currentKind}
               onProfileClick={handleProfileClick}
             />

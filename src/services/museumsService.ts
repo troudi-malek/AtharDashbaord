@@ -17,7 +17,6 @@ export const CreateMuseum = async(formData:FormData) =>{
           });
           return response.data;
     }catch(error){
-        console.error(error);
     }
 }
 
@@ -29,7 +28,6 @@ export const GetMuseums = async () => {
         });
         return response.data;
     } catch (error) {
-        console.error(error);
     }
 };
 
@@ -41,22 +39,44 @@ export const GetMuseumById = async (id: string) => {
         );
         return response.data;
     } catch (error) {
-        console.error(error);
     }
 };
 
-export const UpdateMuseum = async (id: string, formData: FormData) => {
+export const GetGlobalMuseumStats = async () => {
     try {
         const token = getTokenFromCookies();
-        const response = await axios.put(`${API_URL}museum/updateMuseum/${id}`, formData, {
+        const response = await axios.get(`${API_URL}museum/stats`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
+        return response.data;
+    } catch (error) {
+    }
+};
+
+export const GetMuseumIncome = async () => {
+    try {
+        const token = getTokenFromCookies();
+        const response = await axios.get(`${API_URL}museum/income`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
+        return response.data;
+    } catch (error) {
+    }
+};
+
+export const UpdateMuseum = async (id: string, data: FormData | Record<string, any>) => {
+    try {
+        const token = getTokenFromCookies();
+        const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+        const response = await axios.put(`${API_URL}museum/updateMuseum/${id}`, data, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                ...(isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }),
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             },
         });
         return response.data;
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 };
 

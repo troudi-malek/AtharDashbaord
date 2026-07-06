@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { MapPin, Users, TrendingUp } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { GetMuseumById } from "@/services/SuperAdmin/museumsService";
+import { MapPin } from "lucide-react";
+import { GetMuseumById } from "@/services/museumsService";
 
 interface MuseumBannerProps {
   museumId: string;
@@ -31,39 +30,50 @@ export function MuseumBanner({ museumId }: MuseumBannerProps) {
 
   return (
     <div className="relative overflow-hidden rounded-lg border border-border">
-      {/* Banner Image */}
-      <div 
-        className="h-64 bg-cover bg-center relative"
-        style={{ backgroundImage: `url(${museumData.bannerImage || `http://localhost:5000/uploads/${museumData.imageUrl}`})` }}
-      >
-        <div className="absolute inset-0 bg-black/60" />
+      {/* Banner Image (supports any aspect ratio) */}
+      <div className="relative">
+        <img
+          src={`http://localhost:5000/uploads/${museumData.imageUrl}`}
+          alt={museumData.name}
+          className="w-full h-auto max-h-[28rem] object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/60 z-0" />
         {/* Museum Info Overlay */}
-        <div className="absolute inset-0 flex items-end p-8">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-6">
-              <div className="text-5xl bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+        <div className="absolute inset-0 p-8 flex flex-col justify-end z-10">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 lg:gap-6 w-full">
+            {/* Info block */}
+            <div className="flex items-start lg:items-center gap-4 lg:gap-6">
+              <div className="text-3xl lg:text-5xl bg-white/10 p-3 lg:p-4 rounded-xl backdrop-blur-sm shrink-0">
                 {museumData.logo || "🏛️"}
               </div>
-              <div className="text-white">
-                <h1 className="text-4xl font-bold mb-2">{museumData.name}</h1>
-                <div className="flex items-center gap-2 text-white/90 mb-2">
-                  <MapPin className="w-5 h-5" />
-                  <span className="text-lg">{museumData.location}</span>
+              <div className="text-white max-w-full">
+                <h1 className="text-2xl lg:text-4xl font-bold mb-1 lg:mb-2 break-words">{museumData.name}</h1>
+                <div className="flex items-center gap-2 text-white/90 mb-1 lg:mb-2">
+                  <MapPin className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span className="text-base lg:text-lg break-words">{museumData.location}</span>
                 </div>
-                <p className="text-white/80 italic text-lg">{museumData.tagline || museumData.description}</p>
+                <p className="text-white/80 italic text-sm lg:text-lg break-words">{museumData.tagline || museumData.description}</p>
               </div>
             </div>
             {/* Quick Stats */}
-            <div className="flex gap-6">
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <div className="text-2xl font-bold text-white">{museumData.totalVisits ?? "-"}</div>
-                <div className="text-white/80 text-sm">Daily Visitors</div>
-                <div className="text-primary text-sm font-medium">{museumData.monthlyGrowth ?? "-"}</div>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6 w-full lg:w-auto">
+              {/* Daily Visitors */}
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-4">
+                <div className="text-lg lg:text-2xl font-bold text-white leading-tight">{museumData.totalVisits ?? "-"}</div>
+                <div className="text-white/80 text-[10px] lg:text-sm leading-tight">Daily Visitors</div>
+                <div className="text-primary text-[10px] lg:text-sm font-medium leading-tight">{museumData.monthlyGrowth ?? "-"}</div>
               </div>
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <div className="text-2xl font-bold text-white">{museumData.nb_ArExperience ?? "-"}</div>
-                <div className="text-white/80 text-sm">Active Experiences</div>
-                <div className="text-green-400 text-sm font-medium">All Online</div>
+              {/* Monthly Growth (replaces old premium/free widget) */}
+              <div className="hidden lg:block text-center bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-4">
+                <div className="text-lg lg:text-2xl font-bold text-white leading-tight">{museumData.monthlyGrowth ?? "-"}</div>
+                <div className="text-white/80 text-[10px] lg:text-sm leading-tight">Monthly Growth</div>
+                <div className="text-white/70 text-[10px] lg:text-xs leading-tight">vs last month</div>
+              </div>
+              {/* Active Experiences */}
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-4">
+                <div className="text-lg lg:text-2xl font-bold text-white leading-tight">{museumData.nb_ArExperience ?? "-"}</div>
+                <div className="text-white/80 text-[10px] lg:text-sm leading-tight">Active Experiences</div>
+                <div className="text-green-400 text-[10px] lg:text-sm font-medium leading-tight">All Online</div>
               </div>
             </div>
           </div>

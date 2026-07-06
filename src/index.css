@@ -3,45 +3,111 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Minimalist black-and-white design system with warm peach accents */
+/* Modern dreamy design system with calming gradients */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-    --card: 0 0% 96%;
-    --card-foreground: 0 0% 0%;
-    --popover: 0 0% 96%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 32 96% 82%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 32 96% 82%;
-    --accent-foreground: 0 0% 0%;
+    /* Base colors - improved contrast */
+    --background: 240 10% 97%;
+    --foreground: 222 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 25% 15%;
+    
+    /* Primary colors - Mediterranean azurite blue */
+    --primary: 210 85% 45%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 210 70% 65%;
+    --primary-dark: 210 95% 35%;
+    
+    /* Secondary colors - Tunisian terracotta */
+    --secondary: 15 75% 65%;
+    --secondary-foreground: 15 95% 15%;
+    
+    /* Accent colors - Tunisian tile cerulean */
+    --accent: 195 80% 55%;
+    --accent-foreground: 195 95% 15%;
+    
+    /* Tunisian palette colors */
+    --tunisian-sand: 35 25% 85%;
+    --tunisian-ochre: 35 35% 75%;
+    --tunisian-emerald: 165 70% 45%;
+    --tunisian-seafoam: 180 45% 75%;
+    
+    /* Muted colors - better contrast */
+    --muted: 240 6% 92%;
+    --muted-foreground: 240 5% 35%;
+    
+    /* Status colors */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 88%;
-    --input: 0 0% 96%;
-    --ring: 32 96% 82%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 0%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 32 96% 82%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 10%;
-    --sidebar-ring: 32 96% 82%;
-    
-    /* Input validation states */
-    --success: 120 42% 70%;
-    --success-foreground: 120 100% 20%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 38 100% 20%;
+    
+    /* UI elements - better contrast */
+    --border: 220 13% 85%;
+    --input: 240 8% 94%;
+    --ring: 262 60% 65%;
+    --radius: 0.75rem;
+    
+    /* Sidebar - improved contrast */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 25% 15%;
+    --sidebar-primary: 262 60% 65%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 6% 92%;
+    --sidebar-accent-foreground: 222 25% 15%;
+    --sidebar-border: 220 13% 85%;
+    --sidebar-ring: 262 60% 65%;
+    
+    /* Enhanced gradients - Tunisian inspired */
+    --gradient-dreamy: linear-gradient(135deg, hsl(35 25% 85%) 0%, hsl(210 85% 45%) 50%, hsl(195 80% 55%) 100%);
+    --gradient-museum: linear-gradient(145deg, hsl(35 35% 75%) 0%, hsl(15 75% 65%) 30%, hsl(210 70% 65%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(35 15% 95%) 0%, hsl(35 10% 92%) 100%);
+    --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
   }
 
+  .dark {
+    --background: 222 20% 8%;
+    --foreground: 240 10% 98%;
+    --card: 222 16% 12%;
+    --card-foreground: 240 10% 98%;
+    --popover: 222 16% 12%;
+    --popover-foreground: 240 10% 98%;
+    
+    --primary: 262 55% 75%;
+    --primary-foreground: 222 20% 8%;
+    --primary-light: 268 60% 85%;
+    --primary-dark: 256 50% 65%;
+    
+    --secondary: 335 60% 65%;
+    --secondary-foreground: 335 60% 90%;
+    
+    --accent: 210 75% 60%;
+    --accent-foreground: 210 75% 90%;
+    
+    --muted: 222 16% 16%;
+    --muted-foreground: 240 4% 64%;
+    
+    --border: 222 13% 20%;
+    --input: 222 16% 16%;
+    --ring: 262 55% 75%;
+    
+    --sidebar-background: 222 20% 8%;
+    --sidebar-foreground: 240 10% 98%;
+    --sidebar-primary: 262 55% 75%;
+    --sidebar-primary-foreground: 222 20% 8%;
+    --sidebar-accent: 222 16% 16%;
+    --sidebar-accent-foreground: 240 10% 98%;
+    --sidebar-border: 222 13% 20%;
+    --sidebar-ring: 262 55% 75%;
+    
+    --gradient-dreamy: linear-gradient(135deg, hsl(268 60% 25%) 0%, hsl(335 60% 25%) 50%, hsl(210 75% 25%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(222 20% 8%) 0%, hsl(222 16% 12%) 100%);
+    --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  }
 }
 
 @layer base {
@@ -49,35 +115,158 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-poppins antialiased;
   }
 }
 
-/* Custom animations for museum dashboard */
+/* Enhanced animations and utilities */
 @layer utilities {
+  /* Animations */
   .animate-fade-in-up {
-    animation: fade-in-up 0.5s ease-out forwards;
+    animation: fade-in-up 0.6s ease-out forwards;
   }
   
   .animate-scale-in {
-    animation: scale-in 0.3s ease-out forwards;
+    animation: scale-in 0.4s ease-out forwards;
   }
   
   .animate-slide-in-right {
-    animation: slide-in-right 0.4s ease-out forwards;
+    animation: slide-in-right 0.5s ease-out forwards;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  /* Glassmorphism */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+  
+  .glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .glass-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 20px hsla(var(--primary) / 0.3);
+  }
+
+  /* Gradient backgrounds */
+  .bg-dreamy {
+    background: var(--gradient-dreamy);
+  }
+  
+  .bg-soft {
+    background: var(--gradient-soft);
+  }
+  
+  
+  .bg-museum {
+    background: var(--gradient-museum);
+  }
+  
+  .bg-tunisian-sand {
+    background-color: hsl(var(--tunisian-sand));
+  }
+  
+  .bg-tunisian-ochre {
+    background-color: hsl(var(--tunisian-ochre));
+  }
+
+  /* Museum themed utilities */
+  .museum-panel {
+    background-image: url('../assets/museum-gallery-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+  }
+  
+  .museum-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, rgba(210, 180, 140, 0.3), rgba(70, 130, 180, 0.2));
+    backdrop-filter: blur(1px);
+  }
+  
+  .zellige-border {
+    border-image: url('../assets/zellige-pattern.jpg') 30 round;
+    border-width: 3px;
+    border-style: solid;
+  }
+  
+  /* Tunisian color utilities */
+  .text-tunisian-sand {
+    color: hsl(var(--tunisian-sand));
+  }
+  
+  .text-tunisian-ochre {
+    color: hsl(var(--tunisian-ochre));
+  }
+  
+  .text-tunisian-emerald {
+    color: hsl(var(--tunisian-emerald));
+  }
+  
+  .text-tunisian-seafoam {
+    color: hsl(var(--tunisian-seafoam));
+  }
+  
+  /* Field reveal animation */
+  .field-reveal {
+    animation: field-reveal 0.6s ease-out forwards;
+  }
+  
+  .field-reveal-delay-1 {
+    animation: field-reveal 0.6s ease-out 0.2s forwards;
+    opacity: 0;
+  }
+  
+  .field-reveal-delay-2 {
+    animation: field-reveal 0.6s ease-out 0.4s forwards;
+    opacity: 0;
+  }
+  
+  .field-reveal-delay-3 {
+    animation: field-reveal 0.6s ease-out 0.6s forwards;
+    opacity: 0;
+  }
+
+  /* Hover effects */
+  .hover-glow:hover {
+    box-shadow: 0 10px 40px hsla(var(--primary) / 0.4);
+    transform: translateY(-2px);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    transition: transform 0.3s ease;
   }
 
   /* Input validation states */
   .input-error {
-    @apply border-destructive focus:ring-destructive;
+    @apply border-destructive focus:ring-destructive focus:ring-2;
   }
   
   .input-success {
-    @apply border-success focus:ring-success;
+    @apply border-success focus:ring-success focus:ring-2;
   }
   
   .input-warning {
-    @apply border-warning focus:ring-warning;
+    @apply border-warning focus:ring-warning focus:ring-2;
   }
   
   .label-error {
@@ -91,12 +280,37 @@
   .label-warning {
     @apply text-warning;
   }
+  
+  /* Button variants */
+  .btn-glow {
+    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    box-shadow: 0 4px 15px hsla(var(--primary) / 0.4);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-glow:hover {
+    box-shadow: 0 6px 25px hsla(var(--primary) / 0.6);
+    transform: translateY(-1px);
+  }
+  
+  /* Badge styles */
+  .badge-used {
+    background: linear-gradient(45deg, hsl(var(--success)), #22c55e);
+    color: white;
+    box-shadow: 0 2px 8px hsla(var(--success) / 0.3);
+  }
+  
+  .badge-unused {
+    background: linear-gradient(45deg, hsl(var(--muted)), #9ca3af);
+    color: white;
+    box-shadow: 0 2px 8px hsla(var(--muted) / 0.3);
+  }
 }
 
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -107,7 +321,7 @@
 @keyframes scale-in {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
@@ -118,7 +332,7 @@
 @keyframes slide-in-right {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(30px);
   }
   to {
     opacity: 1;
@@ -126,15 +340,57 @@
   }
 }
 
-/* Matte backgrounds for minimalist black-and-white design */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 20px hsla(var(--primary) / 0.5);
+  }
+  to {
+    text-shadow: 0 0 30px hsla(var(--primary) / 0.8);
+  }
+}
+
+@keyframes field-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced gradient backgrounds */
 .gradient-museum {
-  background: hsl(var(--primary));
+  background: var(--gradient-dreamy);
 }
 
 .gradient-gold {
-  background: hsl(var(--accent));
+  background: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--accent-foreground)));
 }
 
 .gradient-stats {
-  background: hsl(var(--card));
+  background: var(--gradient-soft);
+}
+
+.gradient-hero {
+  background: var(--gradient-dreamy);
+  position: relative;
+}
+
+.gradient-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
 }
