@@ -65,6 +65,14 @@ export const LoginForm = () => {
 
     console.log("LOGIN SUCCESS - NAVIGATING");
     navigate('/');
+    console.log("LOGIN SUCCESS - NAVIGATING");
+
+navigate("/admin/dashboard");
+
+setTimeout(() => {
+    console.log("AFTER NAVIGATION:", window.location.href);
+    console.log("TOKEN:", localStorage.getItem("token"));
+}, 500);
   } catch (error: any) {
     console.error("LOGIN ERROR:", error);
 
