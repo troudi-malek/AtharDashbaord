@@ -2,12 +2,9 @@ import { useState, useMemo, useEffect } from "react";
 import { Plus, Edit, Trash2, Eye, BarChart3, Save, X, Upload, Search, Users, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-// import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-// import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line } from "recharts";
 import ExperienceDetails from "./ExperienceDetail";
@@ -56,7 +53,6 @@ export function ExperienceManagement() {
     fetchExperiences();
   }, []);
 
-  // Filter and search experiences
   const filteredExperiences = useMemo(() => {
     return experiences.filter((experience) => {
       const matchesSearch = experience.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,7 +61,6 @@ export function ExperienceManagement() {
     });
   }, [experiences, searchTerm]);
 
-  // Calculate statistics
   const stats = useMemo(() => {
     const totalExperiences = experiences.length;
     const totalViews = experiences.reduce((sum, exp) => sum + (Number(exp.totalViews ?? exp.views) || 0), 0);
@@ -94,7 +89,6 @@ export function ExperienceManagement() {
     setEditingId(null);
   };
 
-  // Show details page if selected
   if (selectedExperienceId) {
     return (
       <ExperienceDetails

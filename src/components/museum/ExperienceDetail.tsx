@@ -36,7 +36,6 @@ export function ExperienceDetails({ experienceId, onBack }: ExperienceDetailsPro
         console.error("API fetch failed, using static data", err);
       }
 
-      // ✅ Static fallback data for Musée national du Bardo
       const fallback = {
         _id: "68a88bd5e7ef55e0b103bfad",
         name: "Musée national du Bardo",
