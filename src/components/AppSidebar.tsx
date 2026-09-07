@@ -5,7 +5,6 @@ import {
   Image, 
   Key, 
   Settings, 
-  Shield, 
   Users,
   User
 } from "lucide-react";

@@ -38,19 +38,11 @@ const Index = () => {
     }
   }, []);
 
-  const handleRoleSwitch = () => {
-    setCurrentKind(currentKind === "Admin" ? "SuperAdmin" : "Admin");
-    setActiveSection("dashboard");
-  };
 
   const handleProfileClick = () => {
     setActiveSection("profile");
   };
 
-  const handleLogoutClick = () => {
-    console.log("Logging out...");
-    alert("Logout functionality would be implemented here");
-  };
 
   if (!currentKind) {
     return <div>Loading...</div>;
@@ -68,10 +60,11 @@ const Index = () => {
           
           <main className="flex-1 flex flex-col">
             <DashboardHeader 
-              username={username}
+              username={username ?? ""}
               kind={currentKind}
-              onProfileClick={handleProfileClick}
-            />
+              onProfileClick={handleProfileClick} onKindSwitch={function (): void {
+                throw new Error("Function not implemented.");
+              } }            />
             
             <div className="flex-1 p-6">
               {currentKind === "Admin" ? (

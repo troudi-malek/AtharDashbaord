@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Calendar, Eye, Users, TrendingUp, MapPin, Clock, Star, Download, Share2 } from "lucide-react";
+import { ArrowLeft, Calendar, Eye, Users, TrendingUp, MapPin, Star, Download, Share2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +52,7 @@ export function ExperienceDetails({ experienceId, onBack }: ExperienceDetailsPro
         totalReviews: 5,
         createdAt: "2025-08-22T15:25:09.720+00:00",
         location: "Tunis",
+        tags: [],
         weeklyStats: [
           { day: "Mon", views: 2 },
           { day: "Tue", views: 4 },
@@ -363,7 +364,7 @@ export function ExperienceDetails({ experienceId, onBack }: ExperienceDetailsPro
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {experienceData.ageGroups?.map((entry: any, index: number) => (
+                        {experienceData.ageGroups?.map(( index: number) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -378,7 +379,7 @@ export function ExperienceDetails({ experienceId, onBack }: ExperienceDetailsPro
                 <CardTitle>Visitor Breakdown</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {experienceData.ageGroups?.map((group: any, index: number) => (
+                {experienceData.ageGroups?.map((group: any) => (
                   <div key={group.name} className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm font-medium text-foreground">{group.name}</span>

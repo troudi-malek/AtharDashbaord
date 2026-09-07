@@ -65,7 +65,7 @@ export function ProfilePage({ userRole }: ProfilePageProps) {
     confirmPassword: false
   });
   // Add image upload state
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -166,12 +166,13 @@ export function ProfilePage({ userRole }: ProfilePageProps) {
 
   // Handle image selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
       // Optionally update preview immediately
       setProfile(prev => ({
         ...prev,
-        profileImage: URL.createObjectURL(e.target.files[0])
+        profileImage: URL.createObjectURL(file)
       }));
     }
   };
