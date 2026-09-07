@@ -16,20 +16,20 @@ export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const fillDemo = (role: "admin" | "superadmin") => {
-  if (role === "superadmin") {
-    setFormData({
-      email: "superadmin@athar-demo.com",
-      password: "Demo123!",
-      rememberMe: true,
-    });
-  } else {
-    setFormData({
-      email: "admin@athar-demo.com",
-      password: "Demo123!",
-      rememberMe: true,
-    });
-  }
-};
+    if (role === "superadmin") {
+      setFormData({
+        email: "superadmin@athar-demo.com",
+        password: "Demo123!",
+        rememberMe: true,
+      });
+    } else {
+      setFormData({
+        email: "admin@athar-demo.com",
+        password: "Demo123!",
+        rememberMe: true,
+      });
+    }
+  };
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -48,42 +48,43 @@ export const LoginForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true);
+    e.preventDefault();
+    setIsLoading(true);
 
-  try {
-    const result = await Login(formData.email, formData.password);
+    try {
+      const result = await Login(formData.email, formData.password);
 
-    console.log("LOGIN RESULT:", result);
-    console.log("TOKEN AFTER LOGIN:", localStorage.getItem("token"));
+      console.log("LOGIN RESULT:", result);
+      console.log("TOKEN AFTER LOGIN:", localStorage.getItem("token"));
 
-    if (!result) {
-      console.log("LOGIN FAILED - NO RESULT");
-      setErrors({ general: 'Invalid email or password.' });
-      return;
+      if (!result) {
+        console.log("LOGIN FAILED - NO RESULT");
+        setErrors({ general: 'Invalid email or password.' });
+        return;
+      }
+
+      console.log("LOGIN SUCCESS - NAVIGATING");
+      navigate('/');
+      console.log("LOGIN SUCCESS - NAVIGATING");
+
+      console.log("BEFORE:", window.location.href);
+
+      navigate("/");
+
+      setTimeout(() => {
+        console.log("AFTER:", window.location.href);
+      }, 500);
+    } catch (error: any) {
+      console.error("LOGIN ERROR:", error);
+
+      const message =
+        error?.response?.data?.message || 'Invalid email or password.';
+
+      setErrors({ general: message, email: '', password: '' });
+    } finally {
+      setIsLoading(false);
     }
-
-    console.log("LOGIN SUCCESS - NAVIGATING");
-    navigate('/');
-    console.log("LOGIN SUCCESS - NAVIGATING");
-
-navigate("/admin/dashboard");
-
-setTimeout(() => {
-    console.log("AFTER NAVIGATION:", window.location.href);
-    console.log("TOKEN:", localStorage.getItem("token"));
-}, 500);
-  } catch (error: any) {
-    console.error("LOGIN ERROR:", error);
-
-    const message =
-      error?.response?.data?.message || 'Invalid email or password.';
-
-    setErrors({ general: message, email: '', password: '' });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Full Museum Gallery Background */}
@@ -121,7 +122,7 @@ setTimeout(() => {
 
           <CardHeader className="text-center pb-6 pt-8">
             {/* Cultural Logo */}
-            
+
 
             <h1 className="text-3xl font-bold text-foreground mb-2 font-poppins field-reveal">
               Bienvenue
@@ -237,44 +238,44 @@ setTimeout(() => {
                 </p>
               </div>
             </form>
-          
+
           </CardContent>
           <div className="mb-6 p-4 rounded-xl border border-border/40 bg-background/40 backdrop-blur-sm">
-  <p className="text-sm font-medium text-foreground mb-3 font-poppins">
-    Demo Accounts (for recruiters)
-  </p>
+            <p className="text-sm font-medium text-foreground mb-3 font-poppins">
+              Demo Accounts (for recruiters)
+            </p>
 
-  <div className="space-y-2 text-xs text-muted-foreground mb-3">
-    <div>
-      <span className="font-semibold">Super Admin:</span> superadmin@athar-demo.com / Demo123!
-    </div>
-    <div>
-      <span className="font-semibold">Admin:</span> admin@athar-demo.com / Demo123!
-    </div>
-  </div>
+            <div className="space-y-2 text-xs text-muted-foreground mb-3">
+              <div>
+                <span className="font-semibold">Super Admin:</span> superadmin@athar-demo.com / Demo123!
+              </div>
+              <div>
+                <span className="font-semibold">Admin:</span> admin@athar-demo.com / Demo123!
+              </div>
+            </div>
 
-  <div className="flex gap-2">
-    <Button
-      type="button"
-      size="sm"
-      variant="secondary"
-      onClick={() => fillDemo("superadmin")}
-      className="text-xs flex-1"
-    >
-      Login as Super Admin
-    </Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => fillDemo("superadmin")}
+                className="text-xs flex-1"
+              >
+                Login as Super Admin
+              </Button>
 
-    <Button
-      type="button"
-      size="sm"
-      variant="outline"
-      onClick={() => fillDemo("admin")}
-      className="text-xs flex-1"
-    >
-      Login as Admin
-    </Button>
-  </div>
-</div>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => fillDemo("admin")}
+                className="text-xs flex-1"
+              >
+                Login as Admin
+              </Button>
+            </div>
+          </div>
         </Card>
       </div>
     </div>
