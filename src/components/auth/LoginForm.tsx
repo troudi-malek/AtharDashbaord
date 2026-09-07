@@ -48,22 +48,34 @@ export const LoginForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const result = await Login(formData.email, formData.password)
-      if (!result) {
-        setErrors({ general: 'Invalid email or password.' });
-        return;
-      }
-      navigate('/')
-    } catch (error: any) {
-      const message = error?.response?.data?.message || 'Invalid email or password.';
-      setErrors({ general: message, email: '', password: '' });
-    } finally {
-      setIsLoading(false);
+  e.preventDefault();
+  setIsLoading(true);
+
+  try {
+    const result = await Login(formData.email, formData.password);
+
+    console.log("LOGIN RESULT:", result);
+    console.log("TOKEN AFTER LOGIN:", localStorage.getItem("token"));
+
+    if (!result) {
+      console.log("LOGIN FAILED - NO RESULT");
+      setErrors({ general: 'Invalid email or password.' });
+      return;
     }
-  };
+
+    console.log("LOGIN SUCCESS - NAVIGATING");
+    navigate('/');
+  } catch (error: any) {
+    console.error("LOGIN ERROR:", error);
+
+    const message =
+      error?.response?.data?.message || 'Invalid email or password.';
+
+    setErrors({ general: message, email: '', password: '' });
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Full Museum Gallery Background */}
