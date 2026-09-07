@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -12,16 +13,22 @@ export const Login = async (email: string, password: string) => {
             { withCredentials: true }
         );
 
-        const token = response.data.data;
-        localStorage.setItem("token", token);
+        const token = Cookies.get("token");
+
+        console.log("Login response:", response.data);
+        console.log("Token from cookie:", token);
+
+        if (!token) {
+            throw new Error("Login successful, but token cookie was not found.");
+        }
+
+        // Decode JWT only for debugging / reading user information
         const parts = token.split(".");
         const payload = parts[1];
 
         const decodedPayload = JSON.parse(atob(payload));
 
         console.log("Decoded JWT payload:", decodedPayload);
-        console.log("Login response:", response.data);
-        console.log("Token saved:", localStorage.getItem("token"));
 
         return response.data;
 
@@ -33,30 +40,52 @@ export const Login = async (email: string, password: string) => {
 
 export const requestPasswordReset = async (email: string) => {
     try {
-        const response = await axios.post(`${API_URL}password-reset/request`, { email }, { withCredentials: true });
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
+        const response = await axios.post(
+            `${API_URL}password-reset/request`,
+            { email },
+            { withCredentials: true }
+        );
 
-export const verifyPasswordResetCode = async (email: string, code: string) => {
-    try {
-        const response = await axios.post(`${API_URL}password-reset/verify`, { email, code }, { withCredentials: true });
         return response.data;
     } catch (error) {
         console.error(error);
         throw error;
     }
-}
+};
 
-export const resetPassword = async (email: string, code: string, newPassword: string) => {
+export const verifyPasswordResetCode = async (
+    email: string,
+    code: string
+) => {
     try {
-        const response = await axios.post(`${API_URL}password-reset/reset`, { email, code, newPassword }, { withCredentials: true });
+        const response = await axios.post(
+            `${API_URL}password-reset/verify`,
+            { email, code },
+            { withCredentials: true }
+        );
+
         return response.data;
     } catch (error) {
         console.error(error);
         throw error;
     }
-}
+};
+
+export const resetPassword = async (
+    email: string,
+    code: string,
+    newPassword: string
+) => {
+    try {
+        const response = await axios.post(
+            `${API_URL}password-reset/reset`,
+            { email, code, newPassword },
+            { withCredentials: true }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
