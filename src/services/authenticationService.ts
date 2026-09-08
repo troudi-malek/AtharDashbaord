@@ -14,7 +14,6 @@ export const Login = async (email: string, password: string) => {
         );
 
         const token = Cookies.get("token");
-
         console.log("Login response:", response.data);
         console.log("Token from cookie:", token);
 
@@ -22,7 +21,6 @@ export const Login = async (email: string, password: string) => {
             throw new Error("Login successful, but token cookie was not found.");
         }
 
-        // Decode JWT only for debugging / reading user information
         const parts = token.split(".");
         const payload = parts[1];
 
