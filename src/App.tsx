@@ -19,9 +19,9 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route element={<ProtectedRoutes />} >
+              {/* <Route element={<ProtectedRoutes />} > */}
               <Route path="/" element={<Index />} />
-              </Route>
+              {/* </Route> */}
 
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginPage />} />
