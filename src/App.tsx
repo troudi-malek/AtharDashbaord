@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import Index from './pages/Index';
+import ProtectedRoutes from "./ProtectedRoutes";
 import ExperienceDetail from './components/museum/ExperienceDetail';
 
 function App() {
@@ -18,9 +19,9 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* <Route element={<ProtectedRoutes />} > */}
+              <Route element={<ProtectedRoutes />} >
               <Route path="/" element={<Index />} />
-              {/* </Route> */}
+              </Route>
 
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginPage />} />
