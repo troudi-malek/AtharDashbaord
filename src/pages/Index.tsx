@@ -12,31 +12,40 @@ const Index = () => {
   const [currentKind, setCurrentKind] = useState<UserKind | "">("");
   const [username, setUsername] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("dashboard");
-  const [museumId, setMuseumId] = useState<string | null>(null);
+  const [museumId] = useState<string | null>(null);
+const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = Cookies.get("token");
-
-    if (token) {
-      try {
-        const parts = token.split(".");
-        const payload = parts[1];
-        const decodedPayload = JSON.parse(atob(payload));
-        setUsername(decodedPayload.username);
-        if (decodedPayload.kind === "Admin" || decodedPayload.kind === "SuperAdmin") {
-          setCurrentKind(decodedPayload.kind);
-        } else {
-          console.warn("Unknown kind in token:", decodedPayload.kind);
-        }
-        // Extract managed museum ID for Admin
-        if (decodedPayload.kind === "Admin" && (decodedPayload.museumId || decodedPayload.mangedMuseum)) {
-          setMuseumId(decodedPayload.museumId || decodedPayload.mangedMuseum);
-        }
-      } catch (err) {
-        console.error("Failed to decode token:", err);
-      }
+  const token = Cookies.get("token");
+  if (!token) {
+    console.warn("No token cookie found");
+    setAuthError("no-token");
+    return;
+  }
+  try {
+    const parts = token.split(".");
+    const payload = parts[1];
+    const decodedPayload = JSON.parse(atob(payload));
+    console.log("Decoded payload:", decodedPayload); // <-- check this in console
+    setUsername(decodedPayload.username);
+    if (decodedPayload.kind === "Admin" || decodedPayload.kind === "SuperAdmin") {
+      setCurrentKind(decodedPayload.kind);
+    } else {
+      console.warn("Unknown kind in token:", decodedPayload.kind);
+      setAuthError("bad-kind");
     }
-  }, []);
+  } catch (err) {
+    console.error("Failed to decode token:", err);
+    setAuthError("decode-failed");
+  }
+}, []);
+
+if (authError) {
+  return <div>Auth error: {authError} — check console.</div>;
+}
+if (!currentKind) {
+  return <div>Loading...</div>;
+}
 
 
   const handleProfileClick = () => {
