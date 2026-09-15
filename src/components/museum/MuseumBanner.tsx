@@ -38,7 +38,7 @@ export function MuseumBanner({ museumId }: MuseumBannerProps) {
       {/* Banner Image (supports any aspect ratio) */}
       <div className="relative">
         <img
-          src={getMediaUrl(museumData.imageUrl)}
+          src={getMediaUrl(museumData.imageUrl ?? museumData.image ?? museumData.logoUrl)}
           alt={museumData.name}
           className="w-full h-auto max-h-[28rem] object-cover object-center"
         />

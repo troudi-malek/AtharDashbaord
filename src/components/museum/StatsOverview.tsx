@@ -26,7 +26,9 @@ export function StatsOverview({ museumId }: StatsOverviewProps) {
 
   useEffect(() => {
     if (!museumId) return;
-    GetMuseumById(museumId).then((data) => setApiData(data));
+    GetMuseumById(museumId).then((response) => {
+      setApiData({ ...(response?.data ?? {}), ...response });
+    });
   }, [museumId]);
 
   const dailyVisits = apiData?.dailyVisits ?? 0;

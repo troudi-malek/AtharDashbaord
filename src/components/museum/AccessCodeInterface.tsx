@@ -41,7 +41,7 @@ export function AccessCodeInterface({ museumId }: { museumId: string }) {
       const data = await GetCodesByMuseum(museumId);
       const codesData = Array.isArray(data)
         ? data
-        : data?.codes ?? data?.data?.codes ?? data?.data ?? [];
+        : data?.codes ?? data?.data?.codes ?? data?.data?.data ?? data?.data ?? [];
       setCodes(codesData);
       setMuseumName(data?.museumName ?? data?.data?.museumName ?? "");
     } catch (error) {

@@ -51,7 +51,11 @@ export function ExperienceManagement({ museumId }: { museumId: string }) {
       const response = await GetExperiences(museumId);
       const data = Array.isArray(response)
         ? response
-        : response?.experiences ?? response?.data?.experiences ?? response?.data ?? [];
+        : response?.experiences
+          ?? response?.data?.experiences
+          ?? response?.data?.data
+          ?? response?.data
+          ?? [];
       setExperiences(Array.isArray(data) ? data : []);
     }
     fetchExperiences().catch((error) => {
@@ -468,7 +472,7 @@ export function ExperienceManagement({ museumId }: { museumId: string }) {
               <>
                 <div className="relative">
                   <img 
-                    src={getMediaUrl(experience.ArtifactImage)}
+                    src={getMediaUrl(experience.ArtifactImage ?? experience.artifactImage ?? experience.imageUrl)}
                     alt={experience.name}
                     className="w-full h-48 object-cover rounded-t-lg transition-all duration-300 group-hover:brightness-110"
                     style={{ border: hoveredId === experience._id ? '2px solid hsl(var(--primary))' : '2px solid transparent' }}

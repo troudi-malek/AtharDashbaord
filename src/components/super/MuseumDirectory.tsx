@@ -154,7 +154,7 @@ export function MuseumDirectory() {
         <Card className="border bg-card">
           <div className="relative h-48 w-full">
             <img 
-              src={getMediaUrl(selectedMuseum.imageUrl)}
+              src={getMediaUrl(selectedMuseum.imageUrl ?? selectedMuseum.image ?? selectedMuseum.logoUrl)}
               alt={selectedMuseum.name}
               className="w-full h-full object-cover rounded-t-lg"
             />
@@ -403,7 +403,7 @@ export function MuseumDirectory() {
           >
             <div className="relative">
               <img 
-                src={getMediaUrl(museum.imageUrl)}
+                src={getMediaUrl(museum.imageUrl ?? museum.image ?? museum.logoUrl)}
                 alt={museum.name}
                 className="w-full h-32 object-cover rounded-t-lg transition-all duration-300 group-hover:brightness-110"
                 style={{ border: '2px solid transparent' }}

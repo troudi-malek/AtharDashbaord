@@ -92,7 +92,7 @@ export function ExperienceDetails({ experienceId, onBack }: ExperienceDetailsPro
         thumbnail:
           data?.thumbnail ||
           (data?.ArtifactImage
-            ? getMediaUrl(data.ArtifactImage)
+            ? getMediaUrl(data.ArtifactImage ?? data.artifactImage ?? data.imageUrl)
             : getMediaUrl(fallback.ArtifactImage)),
         type: data?.type || fallback.type,
         price: data?.price || fallback.price,
