@@ -90,10 +90,13 @@ export function ExperienceDetails({ experienceId, onBack }: ExperienceDetailsPro
         title: data?.name || fallback.name,
         description: data?.description || fallback.description,
         thumbnail:
-          data?.thumbnail ||
-          (data?.ArtifactImage
-            ? getMediaUrl(data.ArtifactImage ?? data.artifactImage ?? data.imageUrl)
-            : getMediaUrl(fallback.ArtifactImage)),
+          getMediaUrl(
+            data?.thumbnail ||
+            data?.ArtifactImage ||
+            data?.artifactImage ||
+            data?.imageUrl ||
+            fallback.ArtifactImage,
+          ),
         type: data?.type || fallback.type,
         price: data?.price || fallback.price,
         rating: data?.rating || fallback.rating,

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GetProfile } from "@/services/profileService";
+import { getMediaUrl } from "@/lib/media";
 
 interface ProfilePageProps {
   userRole: "museum_admin" | "super_admin";
@@ -194,7 +195,7 @@ export function ProfilePage({ userRole }: ProfilePageProps) {
             <div className="flex flex-col items-center space-y-4">
               <div className="relative group">
                 <img 
-                  src={profile.profileImage} 
+                  src={getMediaUrl(profile.profileImage)} 
                   alt="Profile"
                   className="w-32 h-32 rounded-full object-cover border-4 border-primary/20"
                 />
