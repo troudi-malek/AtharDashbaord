@@ -1,10 +1,6 @@
 import axios from "axios";
+import { getAuthToken as getTokenFromCookies } from "@/lib/auth";
 const API_URL = import.meta.env.VITE_API_URL;
-
-function getTokenFromCookies() {
-  const match = document.cookie.match(/(?:^|; )token=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : null;
-}
 
 export const GenerateCodes = async (nbCodes: number) => {
   try {

@@ -78,6 +78,7 @@ export function DashboardHeader({ kind, onProfileClick, username }: DashboardHea
               <DropdownMenuItem 
                 onClick={() =>{
                   Cookies.remove('token');
+                  localStorage.removeItem('token');
                   navigate('/login')
                 }}
                 className="text-destructive cursor-pointer hover:bg-muted focus:text-destructive"

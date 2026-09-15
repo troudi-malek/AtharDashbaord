@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import axios from "axios";
+import { getAuthToken } from "@/lib/auth";
 
 const API_URL = import.meta.env.VITE_API_URL; // adjust to however you currently define this
 
 const getAuthHeaders = () => {
-  const cookieToken = document.cookie.match(/(?:^|; )token=([^;]*)/)?.[1];
-  const token = localStorage.getItem("token") ?? (cookieToken ? decodeURIComponent(cookieToken) : null);
+  const token = getAuthToken();
   return token ? { Authorization: `Bearer ${token}` } : undefined;
 };
 
