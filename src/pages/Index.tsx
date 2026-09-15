@@ -8,6 +8,12 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 
 const API_URL = import.meta.env.VITE_API_URL; // adjust to however you currently define this
 
+const getAuthHeaders = () => {
+  const cookieToken = document.cookie.match(/(?:^|; )token=([^;]*)/)?.[1];
+  const token = localStorage.getItem("token") ?? (cookieToken ? decodeURIComponent(cookieToken) : null);
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
+};
+
 type UserKind = "Admin" | "SuperAdmin";
 
 const Index = () => {
@@ -19,7 +25,10 @@ const Index = () => {
 
   useEffect(() => {
     axios
-      .get(`${API_URL}admin/me`, { withCredentials: true })
+      .get(`${API_URL}admin/me`, {
+        withCredentials: true,
+        headers: getAuthHeaders(),
+      })
       .then(({ data }) => {
         setUsername(data.username);
         if (data.kind === "Admin" || data.kind === "SuperAdmin") {

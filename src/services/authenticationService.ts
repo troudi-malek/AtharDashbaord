@@ -11,6 +11,10 @@ export const Login = async (email: string, password: string) => {
         );
 
         console.log("Login response:", response.data);
+        const token = response.data?.token ?? response.data?.accessToken;
+        if (token) {
+            localStorage.setItem("token", token);
+        }
         return response.data;
 
     } catch (error) {
