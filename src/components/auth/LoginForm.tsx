@@ -63,7 +63,17 @@ export const LoginForm = () => {
         return;
       }
 
+      console.log("LOGIN SUCCESS - NAVIGATING");
       navigate('/');
+      console.log("LOGIN SUCCESS - NAVIGATING");
+
+      console.log("BEFORE:", window.location.href);
+
+      navigate("/");
+
+      setTimeout(() => {
+        console.log("AFTER:", window.location.href);
+      }, 500);
     } catch (error: any) {
       console.error("LOGIN ERROR:", error);
 

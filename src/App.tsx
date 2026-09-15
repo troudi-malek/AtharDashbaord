@@ -23,6 +23,7 @@ function App() {
               <Route path="/" element={<Index />} />
               </Route>
 
+              <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/experience/:id" element={<ExperienceDetail experienceId={""} onBack={function (): void {
