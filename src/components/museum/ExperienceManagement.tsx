@@ -11,14 +11,13 @@ import ExperienceDetails from "./ExperienceDetail";
 import { GetExperiences, CreateExperience, UpdateExperience, DeleteExperience } from "@/services/experienceService";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { getMediaUrl } from "@/lib/media";
 
 const chartConfig = {
   views: { label: "Views", color: "hsl(var(--primary))" }
 };
 
-export function ExperienceManagement() {
+export function ExperienceManagement({ museumId }: { museumId: string }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -49,11 +48,17 @@ export function ExperienceManagement() {
 
   useEffect(() => {
     async function fetchExperiences() {
-      const data = await GetExperiences();
+      const response = await GetExperiences(museumId);
+      const data = Array.isArray(response)
+        ? response
+        : response?.experiences ?? response?.data?.experiences ?? response?.data ?? [];
       setExperiences(Array.isArray(data) ? data : []);
     }
-    fetchExperiences();
-  }, []);
+    fetchExperiences().catch((error) => {
+      console.error("Failed to load experiences:", error);
+    }
+    );
+  }, [museumId]);
 
   const filteredExperiences = useMemo(() => {
     return experiences.filter((experience) => {
@@ -310,8 +315,11 @@ export function ExperienceManagement() {
                   if (newExperience.ArtifactImage) {
                     formData.append("ArtifactImage", newExperience.ArtifactImage);
                   }
-                  await CreateExperience(formData);
-                  const data = await GetExperiences();
+                  await CreateExperience(formData, museumId);
+                  const response = await GetExperiences(museumId);
+                  const data = Array.isArray(response)
+                    ? response
+                    : response?.experiences ?? response?.data?.experiences ?? response?.data ?? [];
                   setExperiences(Array.isArray(data) ? data : []);
                   setShowAddForm(false);
                   setNewExperience({ name: "", description: "", ArtifactImage: null, points: 0 });
@@ -360,7 +368,10 @@ export function ExperienceManagement() {
                         formData.append("ArtifactImage", editForm.ArtifactImage);
                       }
                       await UpdateExperience(String(experience._id), formData);
-                      const data = await GetExperiences();
+                      const response = await GetExperiences(museumId);
+                      const data = Array.isArray(response)
+                        ? response
+                        : response?.experiences ?? response?.data?.experiences ?? response?.data ?? [];
                       setExperiences(Array.isArray(data) ? data : []);
                       stopEditing();
                     }}>
@@ -457,7 +468,7 @@ export function ExperienceManagement() {
               <>
                 <div className="relative">
                   <img 
-                    src={experience.ArtifactImage ? `${API_URL}uploads/${experience.ArtifactImage}` : "/placeholder.png"}
+                    src={getMediaUrl(experience.ArtifactImage)}
                     alt={experience.name}
                     className="w-full h-48 object-cover rounded-t-lg transition-all duration-300 group-hover:brightness-110"
                     style={{ border: hoveredId === experience._id ? '2px solid hsl(var(--primary))' : '2px solid transparent' }}
@@ -535,7 +546,10 @@ export function ExperienceManagement() {
                       </Button>
                       <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" onClick={async () => {
                         await DeleteExperience(String(experience._id));
-                        const data = await GetExperiences();
+                        const response = await GetExperiences(museumId);
+                        const data = Array.isArray(response)
+                          ? response
+                          : response?.experiences ?? response?.data?.experiences ?? response?.data ?? [];
                         setExperiences(Array.isArray(data) ? data : []);
                       }}>
                         <Trash2 className="w-4 h-4" />

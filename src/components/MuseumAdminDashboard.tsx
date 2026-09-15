@@ -16,9 +16,9 @@ export function MuseumAdminDashboard({ activeSection, museumId }: MuseumAdminDas
   const renderContent = () => {
     switch (activeSection) {
       case "experiences":
-        return <ExperienceManagement />;
+        return <ExperienceManagement museumId={museumId} />;
       case "access-codes":
-        return <AccessCodeInterface />;
+        return <AccessCodeInterface museumId={museumId} />;
       case "settings":
         return <MuseumSettings museumId={museumId} />;
       case "profile":

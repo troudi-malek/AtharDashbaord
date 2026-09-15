@@ -8,8 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { GetExperienceById } from "@/services/experienceService";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { getMediaUrl } from "@/lib/media";
 
 interface ExperienceDetailsProps {
   experienceId: string;
@@ -93,8 +92,8 @@ export function ExperienceDetails({ experienceId, onBack }: ExperienceDetailsPro
         thumbnail:
           data?.thumbnail ||
           (data?.ArtifactImage
-            ? `${API_URL}uploads/${data.ArtifactImage}`
-            : `${API_URL}uploads/${fallback.ArtifactImage}`),
+            ? getMediaUrl(data.ArtifactImage)
+            : getMediaUrl(fallback.ArtifactImage)),
         type: data?.type || fallback.type,
         price: data?.price || fallback.price,
         rating: data?.rating || fallback.rating,

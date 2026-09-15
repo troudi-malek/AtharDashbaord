@@ -13,8 +13,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { BarChart, Bar } from "recharts";
 import { CreateMuseum, GetMuseums } from '@/services/museumsService';
 import { DeleteMuseum } from '@/services/museumsService';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { getMediaUrl } from "@/lib/media";
 
 // Removed static museums array
 
@@ -155,7 +154,7 @@ export function MuseumDirectory() {
         <Card className="border bg-card">
           <div className="relative h-48 w-full">
             <img 
-              src={`${API_URL}uploads/${selectedMuseum.imageUrl}`}
+              src={getMediaUrl(selectedMuseum.imageUrl)}
               alt={selectedMuseum.name}
               className="w-full h-full object-cover rounded-t-lg"
             />
@@ -404,7 +403,7 @@ export function MuseumDirectory() {
           >
             <div className="relative">
               <img 
-                src={`${API_URL}uploads/${museum.imageUrl}`}
+                src={getMediaUrl(museum.imageUrl)}
                 alt={museum.name}
                 className="w-full h-32 object-cover rounded-t-lg transition-all duration-300 group-hover:brightness-110"
                 style={{ border: '2px solid transparent' }}

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import { GetMuseumById } from "@/services/museumsService";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { getMediaUrl } from "@/lib/media";
 
 interface MuseumBannerProps {
   museumId: string;
@@ -39,7 +38,7 @@ export function MuseumBanner({ museumId }: MuseumBannerProps) {
       {/* Banner Image (supports any aspect ratio) */}
       <div className="relative">
         <img
-          src={`${API_URL}uploads/${museumData.imageUrl}`}
+          src={getMediaUrl(museumData.imageUrl)}
           alt={museumData.name}
           className="w-full h-auto max-h-[28rem] object-cover object-center"
         />

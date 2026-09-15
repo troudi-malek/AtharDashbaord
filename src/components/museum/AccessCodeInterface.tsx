@@ -19,7 +19,7 @@ type Code = {
   museumName?: string;
 };
 
-export function AccessCodeInterface() {
+export function AccessCodeInterface({ museumId }: { museumId: string }) {
   const [currentCode, setCurrentCode] = useState("");
   const [codeCount, setCodeCount] = useState(1);
   const [filter, setFilter] = useState<"all" | "used" | "unused">("all");
@@ -33,15 +33,17 @@ export function AccessCodeInterface() {
 
   useEffect(() => {
     fetchCodes();
-  }, []);
+  }, [museumId]);
 
   const fetchCodes = async () => {
     try {
       setLoading(true);
-      const data = await GetCodesByMuseum();
-      const codesData = Array.isArray(data) ? data : data?.codes || [];
+      const data = await GetCodesByMuseum(museumId);
+      const codesData = Array.isArray(data)
+        ? data
+        : data?.codes ?? data?.data?.codes ?? data?.data ?? [];
       setCodes(codesData);
-      setMuseumName(data?.museumName || "");
+      setMuseumName(data?.museumName ?? data?.data?.museumName ?? "");
     } catch (error) {
       console.error("Failed to fetch codes:", error);
       toast({
@@ -57,7 +59,7 @@ export function AccessCodeInterface() {
   const generateCodes = async () => {
     try {
       setIsGenerating(true);
-      const res = await GenerateCodes(codeCount);
+      const res = await GenerateCodes(codeCount, museumId);
 
       // Robust extraction of codes from various API shapes
       let codesFromRes: string[] = [];

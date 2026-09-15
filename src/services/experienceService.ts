@@ -2,18 +2,20 @@ import axios from "axios";
 import { getAuthToken as getTokenFromCookies } from "@/lib/auth";
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const CreateExperience = async (formData: FormData) => {
+export const CreateExperience = async (formData: FormData, museumId?: string) => {
   try {
     const token = getTokenFromCookies();
-    // Extract idMuseum from JWT in cookies
-    let idMuseum = null;
-    if (token) {
+    let idMuseum = museumId ?? null;
+    if (!idMuseum && token) {
       const parts = token.split('.');
-      const payload = parts[1];
-      const decodedPayload = JSON.parse(atob(payload));
-      idMuseum = decodedPayload.mangedMuseum;
+      if (parts.length >= 2) {
+        const decodedPayload = JSON.parse(atob(parts[1]));
+        idMuseum = decodedPayload.mangedMuseum;
+      }
     }
-    formData.append('idMuseum', idMuseum);
+    if (idMuseum && !formData.has("idMuseum")) {
+      formData.append("idMuseum", idMuseum);
+    }
     const response = await axios.post(`${API_URL}experience/addExperience`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -26,18 +28,20 @@ export const CreateExperience = async (formData: FormData) => {
   }
 };
 
-export const GetExperiences = async () => {
+export const GetExperiences = async (museumId?: string) => {
   try {
     const token = getTokenFromCookies();
-    if (!token) {
-      throw new Error("Token ya bro")
+    let idMuseum = museumId ?? null;
+    if (!idMuseum && token) {
+      const parts = token.split('.');
+      if (parts.length >= 2) {
+        const decodedPayload = JSON.parse(atob(parts[1]));
+        idMuseum = decodedPayload.mangedMuseum;
+      }
     }
-    const parts = token.split('.');
-    const payload = parts[1];
-    const decodedPayload = JSON.parse(atob(payload));
 
     const response = await axios.post(`${API_URL}experience/getAllExperiences`,
-      { idMuseum: decodedPayload.mangedMuseum },
+      { idMuseum },
       {
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -48,15 +52,14 @@ export const GetExperiences = async () => {
 
     return response.data;
   } catch (error) {
+    console.error("Failed to fetch experiences:", error);
+    throw error;
   }
 };
 
 export const GetExperienceById = async (id: string) => {
   try {
     const token = getTokenFromCookies();
-    if (!token) {
-      throw new Error("Token ya bro");
-    }
     const response = await axios.get(`${API_URL}experience/getExperienceById/${id}`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       withCredentials: true,
