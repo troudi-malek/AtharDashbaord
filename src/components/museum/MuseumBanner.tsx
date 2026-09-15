@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import { GetMuseumById } from "@/services/museumsService";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface MuseumBannerProps {
   museumId: string;
 }
@@ -16,7 +18,11 @@ export function MuseumBanner({ museumId }: MuseumBannerProps) {
     GetMuseumById(museumId)
       .then((data) => {
         console.log("API response:", data);
-        setMuseumData(data.data); // <-- adjust here
+        setMuseumData(data?.data ?? data);
+      })
+      .catch((error) => {
+        console.error("Failed to load museum:", error);
+        setMuseumData(null);
       })
       .finally(() => setLoading(false));
   }, [museumId]);
@@ -33,7 +39,7 @@ export function MuseumBanner({ museumId }: MuseumBannerProps) {
       {/* Banner Image (supports any aspect ratio) */}
       <div className="relative">
         <img
-          src={`http://localhost:5000/uploads/${museumData.imageUrl}`}
+          src={`${API_URL}uploads/${museumData.imageUrl}`}
           alt={museumData.name}
           className="w-full h-auto max-h-[28rem] object-cover object-center"
         />

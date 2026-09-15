@@ -14,6 +14,8 @@ import { BarChart, Bar } from "recharts";
 import { CreateMuseum, GetMuseums } from '@/services/museumsService';
 import { DeleteMuseum } from '@/services/museumsService';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Removed static museums array
 
 const tunisianGovernorates = [
@@ -153,7 +155,7 @@ export function MuseumDirectory() {
         <Card className="border bg-card">
           <div className="relative h-48 w-full">
             <img 
-              src={`http://localhost:5000/uploads/${selectedMuseum.imageUrl}`} 
+              src={`${API_URL}uploads/${selectedMuseum.imageUrl}`}
               alt={selectedMuseum.name}
               className="w-full h-full object-cover rounded-t-lg"
             />
@@ -402,7 +404,7 @@ export function MuseumDirectory() {
           >
             <div className="relative">
               <img 
-                src={`http://localhost:5000/uploads/${museum.imageUrl}`} 
+                src={`${API_URL}uploads/${museum.imageUrl}`}
                 alt={museum.name}
                 className="w-full h-32 object-cover rounded-t-lg transition-all duration-300 group-hover:brightness-110"
                 style={{ border: '2px solid transparent' }}

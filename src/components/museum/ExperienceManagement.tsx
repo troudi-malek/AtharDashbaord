@@ -12,6 +12,8 @@ import { GetExperiences, CreateExperience, UpdateExperience, DeleteExperience } 
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const chartConfig = {
   views: { label: "Views", color: "hsl(var(--primary))" }
 };
@@ -455,7 +457,7 @@ export function ExperienceManagement() {
               <>
                 <div className="relative">
                   <img 
-                    src={experience.ArtifactImage ? `http://localhost:5000/uploads/${experience.ArtifactImage}` : "/placeholder.png"} 
+                    src={experience.ArtifactImage ? `${API_URL}uploads/${experience.ArtifactImage}` : "/placeholder.png"}
                     alt={experience.name}
                     className="w-full h-48 object-cover rounded-t-lg transition-all duration-300 group-hover:brightness-110"
                     style={{ border: hoveredId === experience._id ? '2px solid hsl(var(--primary))' : '2px solid transparent' }}

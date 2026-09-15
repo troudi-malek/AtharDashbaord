@@ -10,6 +10,7 @@ try{
               'Content-Type': 'application/json',
               ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             },
+            withCredentials: true,
           });
           return response.data;
     }catch(error){
@@ -23,6 +24,7 @@ try{
                       'Content-Type': 'multipart/form-data',
                       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
                     },
+                    withCredentials: true,
                   });
                   return response.data;
             }catch(error){

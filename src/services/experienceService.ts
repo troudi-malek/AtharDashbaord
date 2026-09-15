@@ -19,6 +19,7 @@ export const CreateExperience = async (formData: FormData) => {
         'Content-Type': 'multipart/form-data',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -41,6 +42,7 @@ export const GetExperiences = async () => {
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
+        withCredentials: true,
       }
     );
 
@@ -57,6 +59,7 @@ export const GetExperienceById = async (id: string) => {
     }
     const response = await axios.get(`${API_URL}experience/getExperienceById/${id}`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -71,6 +74,7 @@ export const UpdateExperience = async (id: string, formData: FormData) => {
         'Content-Type': 'multipart/form-data',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -82,6 +86,7 @@ export const DeleteExperience = async (id: string) => {
     const token = getTokenFromCookies();
     const response = await axios.delete(`${API_URL}experience/deleteExperience/${id}`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {

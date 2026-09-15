@@ -25,6 +25,7 @@ export const GenerateCodes = async (nbCodes: number) => {
         'Content-Type': 'application/json',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
+      withCredentials: true,
     });
 
     return response.data;
@@ -56,6 +57,7 @@ export const GetCodesByMuseum = async () => {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
+        withCredentials: true,
       }
     );
 

@@ -32,7 +32,7 @@ export const GetProfile = async () => {
 
     const response = await axios.get(
       `${API_URL}admin/profile/${userId}`,
-      { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
+      { headers: token ? { 'Authorization': `Bearer ${token}` } : {}, withCredentials: true }
     );
     return response.data as { data: ProfileResponseData };
   } catch (error) {
