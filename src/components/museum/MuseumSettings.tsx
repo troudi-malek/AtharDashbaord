@@ -196,7 +196,6 @@ export function MuseumSettings({ museumId }: MuseumSettingsProps) {
           </CardContent>
         </Card>
 
-        {/* Live Preview */}
         <Card className="border-0 bg-card">
           <CardHeader>
             <CardTitle>Live Preview</CardTitle>
